@@ -1,0 +1,22 @@
+{
+  "environment": "web",
+  "format": "html",
+  "prefix": "https://storage.googleapis.com",
+  "mainga": "UA-49880327-14",
+  "updated": "2023-06-21T13:44:07+05:30",
+  "id": "Create-A-Video-Conference-React",
+  "duration": 0,
+  "title": "Tutorial: Creating a Real-time Video calling Application",
+  "authors": "Dipak Sisodiya",
+  "summary": "Creating a Real-time Video calling Application using React",
+  "source": "create-a-video-calling-app-in-react.md",
+  "theme": "",
+  "status": [
+    "inreview"
+  ],
+  "category": null,
+  "tags": [
+    "medium"
+  ],
+  "url": "Create-A-Video-Conference-React"
+}

@@ -1,0 +1,194 @@
+
+<!doctype html>
+
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <meta name="theme-color" content="#4F7DC9">
+  <meta charset="UTF-8">
+  <title>Tutorial: Creating a Real-time Video calling Application</title>
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Source+Code+Pro:400|Roboto:400,300,400italic,500,700|Roboto+Mono">
+  <link rel="stylesheet" href="//fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="https://storage.googleapis.com/claat-public/codelab-elements.css">
+  <style>
+    .success {
+      color: #1e8e3e;
+    }
+    .error {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <google-codelab-analytics gaid="UA-49880327-14"></google-codelab-analytics>
+  <google-codelab codelab-gaid=""
+                  id="Create-A-Video-Conference-React"
+                  title="Tutorial: Creating a Real-time Video calling Application"
+                  environment="web"
+                  feedback-link="">
+    
+      <google-codelab-step label="Introduction" duration="0">
+        <p>In this tutorial, we will walk you through the process of creating your very own video calling application using React, powered by Sariska&#39;s Video Calling SDK. With Sariska&#39;s Video Calling SDK, you have access to a powerful set of tools and functionalities that will empower you to build a seamless and immersive video calling experience for your users.</p>
+<p>This tutorial will guide you through the process of installing Sariska Media Transport and using its JavaScript APIs to develop real-time applications. We&#39;ll cover the following topics:</p>
+<ol type="1">
+<li>Installing Sariska Media Transport</li>
+<li>Initializing the SDK</li>
+<li>Creating a Connection</li>
+<li>Creating a Conference</li>
+<li>Playing Local Tracks</li>
+<li>Playing Remote Tracks</li>
+<li>Additional Methods</li>
+</ol>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Installing Sariska Media Transport" duration="0">
+        <p>The first step is to install the Sariska Media Transport library. There are two ways to install it: using NPM or CDN.</p>
+<h2 is-upgraded>NPM</h2>
+<p>To install Sariska Media Transport using NPM, run the following command in your project directory:</p>
+<pre><code language="language-bash" class="language-bash">npm i sariska-media-transport
+</code></pre>
+<h2 is-upgraded>CDN</h2>
+<p>Alternatively, you can add the following script to your website&#39;s HTML head tag:</p>
+<pre><code language="language-html" class="language-html">&lt;script src=&#34;https://sdk.sariska.io/umd/sariska-media-transport.min.js&#34;&gt;&lt;/script&gt;
+</code></pre>
+<p>Now you can access Sariska Media Transport APIs through the <code>SariskaMediaTransport</code> global object, enabling you to use the SDK from the browser.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Initialize SariskaMediaTransport SDK" duration="0">
+        <p>After installing the SDK, you need to perform initial setup tasks by running the <code>initialize()</code> method.</p>
+<pre><code language="language-javascript" class="language-javascript">import SariskaMediaTransport from &#34;sariska-media-transport&#34;;
+
+SariskaMediaTransport.initialize();
+</code></pre>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Create A Connection" duration="0">
+        <p>To start using the media services, the first step is to create a Media WebSocket connection. This connection will establish communication with the server.</p>
+<pre><code language="language-javascript" class="language-javascript">const token = &#34;{your-token}&#34;;
+
+const connection = new SariskaMediaTransport.JitsiConnection(token, &#34;roomName&#34;, isNightly);
+
+connection.addEventListener(SariskaMediaTransport.events.connection.CONNECTION_ESTABLISHED, () =&gt; {
+  console.log(&#39;Connection successful!&#39;);
+});
+
+connection.addEventListener(SariskaMediaTransport.events.connection.CONNECTION_FAILED, (error) =&gt; {
+  if (error === SariskaMediaTransport.events.connection.PASSWORD_REQUIRED) {
+    // Token expired, set a new token
+    connection.setToken(token);
+    console.log(&#39;Connection disconnected!&#39;, error);
+  } else {
+    console.log(&#39;Connection failed!&#39;, error);
+  }
+});
+
+connection.addEventListener(SariskaMediaTransport.events.connection.CONNECTION_DISCONNECTED, (error) =&gt; {
+  console.log(&#39;Connection disconnected!&#39;, error);
+});
+
+connection.connect();
+</code></pre>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Create A Conference" duration="0">
+        <p>Once you have established a connection, you can create a conference using the <code>initJitsiConference()</code> method.</p>
+<pre><code language="language-javascript" class="language-javascript">const options = {
+  startAudioMuted: true, // Join with audio muted
+  startVideoMuted: true, // Join with video muted
+  startSilent: true, // Join with no audio receive/send
+  rtcstatsServer: &#34;&#34;, // Enable rtcstats tracking
+  callStatsID: &#34;&#34;, // Callstats ID
+  callStatsSecret: &#34;&#34;, // Callstats secret
+  channelLastN: 10, // Last N speakers
+};
+
+const conference = connection.initJitsiConference(options);
+conference.join();
+</code></pre>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Capture And Play Local Tracks" duration="0">
+        <p>To capture local audio and video streams, you can use the <code>createLocalTracks()</code> method.</p>
+<pre><code language="language-javascript" class="language-javascript">const options = {
+  devices: [&#34;audio&#34;, &#34;video&#34;],
+  resolution: 240, // Preferred resolution for the local video
+  // Additional options may also be passed
+};
+
+const localTracks = await Sariska
+
+MediaTransport.createLocalTracks(options);
+</code></pre>
+<p>The <code>localTracks</code> array will contain the local audio and video tracks. You can modify the local stream using the provided methods.</p>
+<p>To play the local audio and video tracks, you can use the <code>attach()</code> method.</p>
+<pre><code language="language-javascript" class="language-javascript">const audioTrack = localTracks.find((track) =&gt; track.getType() === &#34;audio&#34;);
+const videoTrack = localTracks.find((track) =&gt; track.getType() === &#34;video&#34;);
+
+// Play video
+videoTrack.attach(document.getElementById(&#34;videoElement&#34;));
+
+// Play audio
+audioTrack.attach(document.getElementById(&#34;audioElement&#34;));
+</code></pre>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Play Remote Tracks" duration="0">
+        <p>To play remote audio and video tracks, you can listen for the <code>TRACK_ADDED</code> event and attach the tracks to the corresponding HTML elements.</p>
+<pre><code language="language-javascript" class="language-javascript">const remoteTracks = [];
+
+conference.addEventListener(SariskaMediaTransport.events.conference.TRACK_ADDED, function (track) {
+  remoteTracks.push(track);
+});
+
+remoteTracks.forEach((track) =&gt; {
+  if (track.getType() === &#34;audio&#34;) {
+    RemoteContainer.append(track.attach(document.getElementById(&#34;remoteAudioElemId&#34;)));
+  }
+
+  if (track.getType() === &#34;video&#34;) {
+    RemoteContainer.append(track.attach(document.getElementById(&#34;remoteVideoElemId&#34;)));
+  }
+});
+</code></pre>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Start Application" duration="0">
+        <p>To start the application,</p>
+<pre><code language="language-shell" class="language-shell">npm start
+
+</code></pre>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Conclusion" duration="0">
+        <p>Congratulations! You have successfully installed Sariska Media Transport and learned how to initialize the SDK, create a connection, create a conference, play local and remote tracks, and utilize additional methods. You are now ready to develop real-time applications using Sariska Media Transport APIs.</p>
+<p>Happy coding!</p>
+
+
+      </google-codelab-step>
+    
+  </google-codelab>
+
+  <script src="https://storage.googleapis.com/claat-public/native-shim.js"></script>
+  <script src="https://storage.googleapis.com/claat-public/custom-elements.min.js"></script>
+  <script src="https://storage.googleapis.com/claat-public/prettify.js"></script>
+  <script src="https://storage.googleapis.com/claat-public/codelab-elements.js"></script>
+  <script src="//support.google.com/inapp/api.js"></script>
+
+</body>
+</html>
